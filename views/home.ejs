@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Stock Search</title>
+	<style type="text/css">
+		body {
+			font-family: Sans-serif;
+			color: #484848;
+		}
+
+
+		a:link {
+			text-decoration: none;
+		}
+		a, a:visited, a:active {
+		  color: #0000EE;
+		}
+		a:hover {
+			color: #484848;
+		}
+
+		.searchWindow {
+			font-family: Serif;
+			color: black;
+			padding: 5px;
+		}
+		.searchWindow h1 {
+			font-style: italic;
+			text-align: center;
+			font-size: 25px;
+		}
+
+		.searchWindow hr {
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+		.searchWindow {
+			width: 350px;
+			margin: auto;
+			border: 1px solid #b0b0b0;
+			background: #eee;
+		}
+
+		.inputGroup {
+			padding-left: 190px;
+			margin-top: 10px;
+		}
+
+		.inputGroup input {
+			width: 58px;
+		}
+
+		#infoTable {
+			margin: auto;
+			border: 1px solid #D4D4D4;
+			border-collapse: collapse;
+			margin-top: 10px;
+			width: 1200px;
+		}
+
+		#infoTable img {
+			height: 0.9em;
+			width: auto;
+		}
+
+		#infoTable th {
+			background: #eee;
+			width: 400px;
+			text-align: left;
+			border: 1px solid #D4D4D4;
+		}
+
+		#infoTable td {
+			width: 800px;
+			text-align: center;
+			border: 1px solid #D4D4D4;
+			background: #fafafa;
+
+		}
+
+		#infoTable a {
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+
+		#container {
+			width:1200px;
+			margin: auto;
+			border: 1px solid #D4D4D4;
+			margin-top: 5px;
+		}
+
+		#news table {
+			width: 1200px;
+			margin: auto;
+			margin-top: 20px;
+			border-collapse: collapse;
+			background: #fafafa;
+		}
+
+		#news table td {
+			border: 1px solid #D4D4D4;
+			height: 1.8em;
+		}
+
+		#news a {
+			margin-right: 20px;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		#toggleDiv {
+			width: 180px;
+			margin: auto;
+			text-align: center;
+		}
+		#toggleDiv p {
+			margin-bottom: 4px;
+		}
+		#toggleDiv img {
+			height: 1em;
+			width: auto;
+			margin: auto;
+		}
+	</style>
+	<script src="https://code.highcharts.com/highcharts.src.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+</head>
+
+<body>
+    
+    
+    
+    <div class="searchWindow">
+    	<h1>Stock Search</h1>
+    	<hr>
+    	<form id="searchForm" method="POST" action="/">
+    		Enter Stock Ticker Symbol:* <input type="text" name="name"  id="symb"> <br>
+    		<div class="inputGroup">
+    			<input type="submit" name="formSubmit" value="Search" onclick="inputVerify()">
+    			<!-- <input type="submit" value="Clear" name="formClear"> -->
+    			<!--<button type="button">Clear</button>-->
+    		</div>
+    		
+    	</form>
+    	<p><i>* - Mandatory filds</i></p>
+    </div>
+    
+    <!--<div>-->
+    <!--    -->
+    <!--</div>-->
+    
+    
+</body>
+</html>

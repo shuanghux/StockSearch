@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Stock Search</title>
+	<script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+	<script src="//code.angularjs.org/1.5.0/angular.js"></script>
+    <script src="//code.angularjs.org/1.5.0/angular-aria.js"></script>
+    <script src="//code.angularjs.org/1.5.0/angular-animate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.4/angular-material.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.4/angular-material.min.css" />
+    <!-- <script src="https://code.highcharts.com/highcharts.src.js"></script> -->
+	<!-- <script src="https://code.highcharts.com/modules/exporting.js"></script> -->
+	<script src="https://code.highcharts.com/stock/highstock.js"></script>
+	<script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+	
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<!-- <script src="https://code.highcharts.com/highcharts.src.js"></script> -->
+	<!-- <script src="https://code.highcharts.com/modules/exporting.js"></script> -->
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+	<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+	<link href="angular-bootstrap-toggle.min.css" rel="stylesheet">
+    <script src="angular-bootstrap-toggle.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="main.css">
+
+</head>
+
+<body>
+	<script>
+	  window.fbAsyncInit = function() {
+	    FB.init({
+	      appId            : '123944834967352',
+	      autoLogAppEvents : true,
+	      xfbml            : true,
+	      version          : 'v2.11'
+	    });
+	  };
+
+	  (function(d, s, id){
+	     var js, fjs = d.getElementsByTagName(s)[0];
+	     if (d.getElementById(id)) {return;}
+	     js = d.createElement(s); js.id = id;
+	     js.src = "https://connect.facebook.net/en_US/sdk.js";
+	     fjs.parentNode.insertBefore(js, fjs);
+	   }(document, 'script', 'facebook-jssdk'));
+	</script>
+
+<div class="container" ng-app='myapp'>
+	<div class="searchWindow well-lg row">
+		<h1>Stock Search</h1>
+		<hr>
+		<!-- onSubmit="return inputVerify(this)" -->
+		<div id="searchForm">
+			
+			
+			<form class="inputGroup"  layout="row" 
+			ng-controller="autocompleteController as ctrl">
+			<div class="row" id="formRow">
+
+
+				<span class="col-xs-12 col-sm-3 col-md-3" id="enterP">Enter Stock Ticker Symbol:<span style="color: red">*</span> </span>
+				<div class="col-xs-12 col-sm-5 col-md-5">
+					<md-autocomplete flex
+		            md-selected-item="ctrl.selectedItem"
+		            md-search-text="ctrl.searchText"
+		            md-items="item in ctrl.querySearch(ctrl.searchText)"
+		            md-item-text="item.Symbol"
+		            md-delay="300"
+		            placeholder="e.g. AAPL"
+		            md-input-id="input-0"
+		            md-clear-button = "false"
+		            >
+		          <div layout="row" class="item" layout-align="start center">
+		            <span md-highlight-text="ctrl.searchText">{{item.Symbol}} - {{item.Name}} ({{item.Exchange}})</span>  
+		          </div>
+	        	</md-autocomplete>
+	        	<br>
+	        	<p id="invalid_alert" class="hidden">Please enter a stock symbol</p>
+				</div>
+				
+
+
+				<div class="col-xs-12 col-sm-4 col-md-4">
+					<button class="btn btn-primary" disabled="disabled" onclick="search();" id="getQuote">
+					<span class="glyphicon glyphicon-search" aria-hidden="true">
+					</span>
+					Get Quote
+					</button>
+					<!-- <input type="submit" value="Clear" name="formClear"> -->
+					<div class="btn btn-default" onclick="pseudoClear()">
+						<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+						Clear
+					</div>
+				</div>
+				
+
+
+
+
+
+
+			</div>
+
+		
+			
+			</form>
+		</div>
+	</div>
+
+	<div id="pageBody" class= "well-lg mainBody row" ng-controller="favListContoller">
+		<div class="check-element funky-show-hide" id="favList" ng-show="onFrontPage">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="row">
+						<div style="float: left;"><h5 style="line-height: 2em; margin-left: 10px;" class="panel-title">Favorite List</5></div>
+						<div style="float: right;">
+							<span id="autoRefreshP" class="hidden-xs">Automatic Refresh:</span>
+							<label class="checkbox-inline">
+							  <!-- <input type="checkbox" data-toggle="toggle"> -->
+							  <toggle ng-model="toggleRefreshValue" ng-change="toggleRefresh()"></toggle>
+							  <span ng-bind="toggleRefreshValue"></span>
+							</label>
+							<button class="btn btn-default" ng-click="refreshFavData()"><span class="glyphicon glyphicon-refresh" aria-hidden="true"></span></button>
+							<button class="btn btn-default" ng-disabled="chartNotLoaded" ng-click="moveTo2()" onclick="hideContent('favList');showContent('currentStock');setFavIcon()";><span class="glyphicon glyphicon-chevron-right" aria-hidden="true"></span></button>
+						</div>
+					</div>
+				</div>
+				<div class="panel-body" id="favListCtrDiv">
+
+
+					<div class="row form-group">
+						<div class="col-sm-4">
+							<h5 class="panel-title">Sort by: </h5>
+							<select class="selectpicker show-tick form-control" ng-model="selectedType"
+							ng-init="selectedType = selectedType || 'default'" ng-change="changeType()">
+							  <option value="default">Default</option>
+							  <option value="symbol">Symbol</option>
+							  <option value="price">Stock Price</option>
+							  <option value="change">Change</option>
+							  <option value="percent">Change Percent</option>
+							  <option value="volume">Volume</option>
+							</select>
+						</div>
+						<div class="col-sm-4">
+							<h5 class="panel-title">Order</h5>
+							<select class="selectpicker show-tick form-control" ng-model="selectedOrder" ng-disabled="isOrderDisabled" ng-init="selectedOrder = selectedOrder || 'asc'; isOrderDisabled = true" ng-change="changeOrder()">
+							  <option value="asc">Ascending</option>
+							  <option value="des">Descending</option>
+							</select>
+						</div>
+					</div>
+
+
+					<table>
+						<tr class="row">
+							<th class="col-md-2">Symbol</th>
+							<th class="col-md-3">Stock Price</th>
+							<th class="col-md-4">Change(Change Percent)</th>
+							<th class="col-md-2">Volume</th>
+							<th class="col-md-1"></th>
+						</tr>
+						<tr ng-repeat="obj in favArr | orderBy:sortType:sortReverse" class="row">
+							<td class="col-md-2"><a ng-click="favItemGetQuote(obj['title'])">{{obj["title"]}}</a></td>
+							<td class="col-md-2">{{obj["price"]}}</td>
+							<td class="col-md-4 favChangeTd {{obj['change'] > 0 ? 'posTd' : 'negTd'}}">
+								{{obj["change"]}}({{obj["percent"]}}%)
+							</td>
+							<td class="col-md-2">{{obj["volumeStr"]}}</td>
+							<td class="col-md-1">
+								<button class="btn btn-default" ng-click="deleteStock(obj['title'])">
+									<span class="glyphicon glyphicon-trash" aria-hidden="true">
+								</button>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	
+
+
+
+
+
+
+
+		<div class="check-element funky-show-hide" id="currentStock" ng-show="!onFrontPage">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="row">
+						<div class="col-xs-1">
+							<button style="display: inline;" class="btn btn-default" ng-click="moveTo1()" onclick="hideContent('currentStock');showContent('favList')";"><span class="glyphicon glyphicon-chevron-left" aria-hidden="true"></span></button>
+						</div>
+						<div class="col-xs-10" style="text-align: center;">
+							<h5 style="line-height: 2em" class="panel-title">Stock Details</h5>
+						</div>
+					</div>
+					
+					
+				</div>
+				<div class="panel-body row">
+
+
+					<ul class="nav nav-pills">
+						<li class="active"><a data-toggle="pill" data-target="#menu1">
+					    	<div class="hidden-xs">
+					    		<span class="glyphicon glyphicon-dashboard"></span> Current Stock
+					   		</div>
+					   		<div class="hidden-sm hidden-md hidden-lg">
+					   			<span class="glyphicon glyphicon-dashboard"></span>Stock
+					   		</div>
+				    	</a></li>
+				    	<li><a data-toggle="pill" data-target="#menu2" onclick="showHistory();showHistory();">
+				    		<div class="hidden-xs">
+				    			<span class="glyphicon glyphicon-stats"></span> Historical Charts
+				    		</div>					    		<div class="hidden-sm hidden-md hidden-lg">
+					    		<span class="glyphicon glyphicon-stats"></span>Charts
+					    	</div>
+					   	</a></li>
+					   	<li><a data-toggle="pill" data-target="#menu3" onclick="showNews()">
+					   		<div class="hidden-xs">
+					   			<span class="glyphicon glyphicon-link"></span> News Feed
+				    		</div>
+				    		<div class="hidden-sm hidden-md hidden-lg">
+				    			<span class="glyphicon glyphicon-link"></span> News
+				    		</div>
+				    	</a></li>			    	
+				  	</ul>
+
+				  	<div class="tab-content">
+				  		<hr>
+				  		<div id="menu1" class="tab-pane fade in active">
+				  			<div id="TableContainer" class="col-md-6">
+				  				<div class="row" style="margin-left: 15px;margin-right: 15px; margin-bottom: 12px;">
+				  					<h5 style="float: left;">Stock Details</h5>
+				  					<div style="float: right;">
+				  						<button class="btn btn-default" onclick="clickFav()"><span id="favBtn" class="star glyphicon glyphicon-star-empty"></span></button>
+				  						<button class="btn btn-default" onclick="clickFB()" ><span id="faceBookBtn"><img style="height: 1.5em" src="http://cs-server.usc.edu:45678/hw/hw8/images/facebook.png"></span></button>
+				  					</div>
+				  					
+				  				
+
+				  				</div>
+				  				<div class="progress" id="progress_TABLE">
+								  <div class="progress-bar progress-bar-striped active" role="progressbar"
+								  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+								  </div>
+								</div>
+								<div class="alert alert-danger" id="alert_TABLE">
+									<strong>Error</strong> Something's wrong with fetched data, try again later.
+								</div>
+				  				<div id="InfoContainer"></div>
+				  			</div>
+							
+
+							<div id="chartContainer" class="col-md-6">
+								<ul class="nav nav-tabs">
+								    <li class="active"><a data-toggle="tab" onclick="showPrice();curr_chart='PRICE'" data-target="#PRICE_div">Price</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('SMA');curr_chart='SMA'" data-target="#SMA_div">SMA</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('EMA');curr_chart='EMA'" data-target="#EMA_div">EMA</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('STOCH');curr_chart='STOCH'" data-target="#STOCH_div">STOCH</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('RSI');curr_chart='RSI'" data-target="#RSI_div">RSI</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('ADX');curr_chart='ADX'" data-target="#ADX_div">ADX</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('CCI');curr_chart='CCI'" data-target="#CCI_div">CCI</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('BBANDS');curr_chart='BBANDS'" data-target="#BBANDS_div">BBANDS</a></li>
+								    <li><a data-toggle="tab" onclick="loadChart('MACD');curr_chart='MACD'" data-target="#MACD_div">MACD</a></li>
+								</ul>
+
+
+
+								<div class="tab-content">
+									<div id="PRICE_div" class="tab-pane fade in active">
+										<div class="progress" id="progress_PRICE">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_PRICE">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_PRICE"></div>
+									</div>
+									<div id="SMA_div" class="tab-pane fade">
+										<div class="progress" id="progress_SMA">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_SMA">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_SMA"></div>
+									</div>
+									<div id="EMA_div" class="tab-pane fade">
+										<div class="progress" id="progress_EMA">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_EMA">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_EMA"></div>
+									</div>
+									<div id="STOCH_div" class="tab-pane fade">
+										<div class="progress" id="progress_STOCH">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_STOCH">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_STOCH"></div>
+									</div>
+									<div id="RSI_div" class="tab-pane fade">
+										<div class="progress" id="progress_RSI">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_RSI">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_RSI"></div>
+									</div>
+									<div id="ADX_div" class="tab-pane fade">
+										<div class="progress" id="progress_ADX">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_ADX">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_ADX"></div>
+									</div>
+									<div id="CCI_div" class="tab-pane fade">
+										<div class="progress" id="progress_CCI">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_CCI">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_CCI"></div>
+									</div>
+									<div id="BBANDS_div" class="tab-pane fade">
+										<div class="progress" id="progress_BBANDS">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_BBANDS">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_BBANDS"></div>
+									</div>
+									<div id="MACD_div" class="tab-pane fade">
+										<div class="progress" id="progress_MACD">
+										  <div class="progress-bar progress-bar-striped active" role="progressbar"
+										  aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+										  </div>
+										</div>
+										<div class="alert alert-danger" id="alert_MACD">
+										  <strong>Error</strong> Something's wrong with fetched data, try again later.
+										</div>
+										<div id="highchart_MACD"></div>
+									</div>
+
+								</div>
+
+
+							</div>
+						</div>
+
+						<div id="menu2" class="tab-pane fade" style="width: 100%">
+							<div class="progress" id="progress_HISTORY">
+								<div class="progress-bar progress-bar-striped active" role="progressbar"
+								aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+								</div>
+							</div>
+							<div class="alert alert-danger" id="alert_HISTORY">
+								<strong>Error</strong> Something's wrong with fetched data, try again later.
+							</div>
+							<div style="width: 100%" id="historyContainer"></div>
+						</div>
+						<div id="menu3" class="tab-pane fade">
+							<div class="progress" id="progress_NEWS">
+								<div class="progress-bar progress-bar-striped active" role="progressbar"
+								aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="width:50%">
+								</div>
+							</div>
+							<div class="alert alert-danger" id="alert_NEWS">
+								<strong>Error</strong> Something's wrong with fetched data, try again later.
+							</div>
+							<div id="newsContainer"></div>
+						</div>
+				  	</div>
+				</div>
+			</div>
+		</div>
+
+
+	</div>
+	
+
+	
+	
+</div>
+
+
+ <!-- Form Here -->
+
+
+
+
+
+<script type="text/javascript" src="main.js"></script>
+<script type="text/javascript" src="myangular.js"></script>
+<script type="text/javascript" src="showChart.js"></script>
+<script type="text/javascript" src="history.js"></script>
+<script type="text/javascript" src="showNews.js"></script>
+</body>
+</html>

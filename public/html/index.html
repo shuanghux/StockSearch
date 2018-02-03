@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Stock Search</title>
+	<style type="text/css">
+		/*body {
+			font-family: Sans-serif;
+			color: #484848;
+		}
+
+
+		a:link {
+			text-decoration: none;
+		}
+		a, a:visited, a:active {
+		  color: #0000EE;
+		}
+		a:hover {
+			color: #484848;
+		}
+
+		.searchWindow {
+			font-family: Serif;
+			color: black;
+			padding: 5px;
+		}
+		.searchWindow h1 {
+			font-style: italic;
+			text-align: center;
+			font-size: 25px;
+		}
+
+		.searchWindow hr {
+			padding-left: 5px;
+			padding-right: 5px;
+		}
+		.searchWindow {
+			width: 350px;
+			margin: auto;
+			border: 1px solid #b0b0b0;
+			background: #eee;
+		}
+
+		.inputGroup {
+			padding-left: 190px;
+			margin-top: 10px;
+		}
+
+		.inputGroup input {
+			width: 58px;
+		}
+
+		#infoTable {
+			margin: auto;
+			border: 1px solid #D4D4D4;
+			border-collapse: collapse;
+			margin-top: 10px;
+			width: 1200px;
+		}
+
+		#infoTable img {
+			height: 0.9em;
+			width: auto;
+		}
+
+		#infoTable th {
+			background: #eee;
+			width: 400px;
+			text-align: left;
+			border: 1px solid #D4D4D4;
+		}
+
+		#infoTable td {
+			width: 800px;
+			text-align: center;
+			border: 1px solid #D4D4D4;
+			background: #fafafa;
+
+		}
+
+		#infoTable a {
+			padding-left: 10px;
+			padding-right: 10px;
+		}
+
+		#container {
+			width:1200px;
+			margin: auto;
+			border: 1px solid #D4D4D4;
+			margin-top: 5px;
+		}
+
+		#news table {
+			width: 1200px;
+			margin: auto;
+			margin-top: 20px;
+			border-collapse: collapse;
+			background: #fafafa;
+		}
+
+		#news table td {
+			border: 1px solid #D4D4D4;
+			height: 1.8em;
+		}
+
+		#news a {
+			margin-right: 20px;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		#toggleDiv {
+			width: 180px;
+			margin: auto;
+			text-align: center;
+		}
+		#toggleDiv p {
+			margin-bottom: 4px;
+		}
+		#toggleDiv img {
+			height: 1em;
+			width: auto;
+			margin: auto;
+		}*/
+	</style>
+	<script src="//code.angularjs.org/1.5.0/angular.js"></script>
+    <script src="//code.angularjs.org/1.5.0/angular-aria.js"></script>
+    <script src="//code.angularjs.org/1.5.0/angular-animate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.1/angular-material.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.1.1/angular-material.min.css" />
+	<!-- <script src="https://code.highcharts.com/highcharts.src.js"></script> -->
+	<!-- <script src="https://code.highcharts.com/modules/exporting.js"></script> -->
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="main.css">
+	
+</head>
+
+<body>
+<div class="container">
+	<div class="searchWindow well-lg">
+		<h1>Stock Search</h1>
+		<hr>
+		<!-- onSubmit="return inputVerify(this)" -->
+		<div id="searchForm">
+			
+			
+			<form class="inputGroup" ng-app='myapp' layout="row" 
+			ng-controller="autocompleteController as ctrl">
+			<span>Enter Stock Ticker Symbol:* </span>
+				<md-autocomplete flex
+		            md-selected-item="ctrl.selectedItem"
+		            md-search-text="ctrl.searchText"
+		            md-items="item in ctrl.querySearch(ctrl.searchText)"
+		            md-item-text="item.Symbol"
+		            md-delay="300"
+		            placeholder="e.g. AAPL"
+		            >
+		          <div layout="row" class="item" layout-align="start center">
+		            <span md-highlight-text="ctrl.searchText">{{item.Symbol}} - {{item.Name}} ({{item.Exchange}})</span>  
+		          </div>
+	        </md-autocomplete>
+
+
+				<button class="btn btn-primary" disabled="disabled" onclick="reqInfo()" id="getQuote">
+					<span class="glyphicon glyphicon-search" aria-hidden="true">
+					</span>
+					Get Quote
+				</button>
+				<!-- <input type="submit" value="Clear" name="formClear"> -->
+				<div class="btn btn-default" onclick="clearAll()">
+					<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+					Clear
+				</div>
+			</div>
+			<p id="invalid_alert" class="hidden">Please Enter a valid stock symbol</p>
+		</form>
+		
+	</div>
+	<div class="well-lg mainBody">
+		<div id="InfoContainer">
+
+		</div>
+
+		<div id="chartContainer"></div>
+
+	</div>
+	
+	
+</div>
+
+
+ <!-- Form Here -->
+
+
+
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+<script type="text/javascript" src="main.js"></script>
+</body>
+</html>
