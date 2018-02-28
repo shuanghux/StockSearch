@@ -15,9 +15,9 @@ $(document).ready(function(){
 $(function(){
 	$('.favChangeTd').each(function(){
 	if($(this).hasClass('negTd')){
-		$(this).append("<img src='http://cs-server.usc.edu:45678/hw/hw8/images/Down.png' style='height:1em'>");
+		$(this).append("<img src='./Down.png' style='height:1em'>");
 	} else {
-		$(this).append("<img src='http://cs-server.usc.edu:45678/hw/hw8/images/Up.png' style='height:1em'>");
+		$(this).append("<img src='./Up.png' style='height:1em'>");
 	}
 });
 })
@@ -26,9 +26,9 @@ function refreshArrow(){
 	$('.favChangeTd').each(function(){
 		if($(this).find('img').length < 1) {
 		    if($(this).hasClass('negTd')){
-				$(this).append("<img src='http://cs-server.usc.edu:45678/hw/hw8/images/Down.png' style='height:1em'>");
+				$(this).append("<img src='./Down.png' style='height:1em'>");
 			} else {
-				$(this).append("<img src='http://cs-server.usc.edu:45678/hw/hw8/images/Up.png' style='height:1em'>");
+				$(this).append("<img src='./Up.png' style='height:1em'>");
 			}
 		}
 	});
@@ -187,7 +187,7 @@ function ajaxLoad(symb) {
 	// Table Content
 	curr_symb = symb.toUpperCase();
 	// var apiUrl = "https://webdevbootcamp-shuanghu.c9users.io";
-	var apiUrl = "http://shuang.us-east-1.elasticbeanstalk.com";
+	var apiUrl = "http://Stocksearch-env.eztzb6ipwk.us-west-2.elasticbeanstalk.com";
 	var waitTime = 0;
 	$('.nav-tabs a[data-target="#PRICE_div"]').tab('show');
 	$.ajax({
@@ -428,9 +428,9 @@ function showTable(){
 			value = tableInfoJson[title];
 			var pattern = /-/;
 			if(pattern.test(value)){
-				tableHTML += "<tr><th>"+title+"</th><td style='color: red;'>"+value+"<img src='http://cs-server.usc.edu:45678/hw/hw8/images/Down.png' style='height:1em;'>"+"</td></tr>";
+				tableHTML += "<tr><th>"+title+"</th><td style='color: red;'>"+value+"<img src='./Down.png' style='height:1em;'>"+"</td></tr>";
 			} else {
-				tableHTML += "<tr><th>"+title+"</th><td style='color: green;'>"+value+"<img src='http://cs-server.usc.edu:45678/hw/hw8/images/Up.png' style='height:1em;'>"+"</td></tr>";
+				tableHTML += "<tr><th>"+title+"</th><td style='color: green;'>"+value+"<img src='./Up.png' style='height:1em;'>"+"</td></tr>";
 			}
 		}
 		

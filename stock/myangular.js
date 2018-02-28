@@ -3,7 +3,7 @@ var app = angular.module('myapp', ['ngMaterial','ui.toggle']);
 app.controller("autocompleteController", function($http){
           //http://dev.markitondemand.com/MODApis/Api/v2/Lookup/json?input=Apple
           this.querySearch = function(query){
-            return $http.get("http://shuang.us-east-1.elasticbeanstalk.com/autocomplete/"+query)
+            return $http.get("http://Stocksearch-env.eztzb6ipwk.us-west-2.elasticbeanstalk.com/autocomplete/"+query)
             .then(function(response){
               return response.data;
             })
@@ -74,7 +74,7 @@ app.controller("favListContoller", function($scope, $window){
   $scope.refreshFavData = function(){
     var keys = Object.keys($window.localStorage);
     keys.forEach(function(key){
-      var apiUrl = "https://webdevbootcamp-shuanghu.c9users.io";
+      var apiUrl = "https://Stocksearch-env.eztzb6ipwk.us-west-2.elasticbeanstalk.com";
       $.ajax({
           url: apiUrl +'/table/'+ key,
           dataType: 'json'

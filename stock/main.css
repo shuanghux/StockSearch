@@ -1,11 +1,9 @@
 html {
-	background-image:url(http://cs-server.usc.edu:45678/hw/hw8/images/background.png);
-    background-repeat:repeat;
+	background: #4c4c4c;
 }
 
 body {
-	background-image:url(http://cs-server.usc.edu:45678/hw/hw8/images/background.png);
-    background-repeat:repeat;
+	background: #4c4c4c;
 }
 
 .searchWindow {
